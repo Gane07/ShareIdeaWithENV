@@ -1,0 +1,6 @@
+/home/zadmin/Desktop/ShareIdeaV3/CommentService/src/main/java/com/shareidea/comment/CommentsServiceApplication.java
+/home/zadmin/Desktop/ShareIdeaV3/CommentService/src/main/java/com/shareidea/comment/controller/CommentController.java
+/home/zadmin/Desktop/ShareIdeaV3/CommentService/src/main/java/com/shareidea/comment/model/Comment.java
+/home/zadmin/Desktop/ShareIdeaV3/CommentService/src/main/java/com/shareidea/comment/repository/CommentRepository.java
+/home/zadmin/Desktop/ShareIdeaV3/CommentService/src/main/java/com/shareidea/comment/service/CommentService.java
+/home/zadmin/Desktop/ShareIdeaV3/CommentService/src/main/java/com/shareidea/comment/service/CommentServiceImpl.java
