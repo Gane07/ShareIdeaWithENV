@@ -1,0 +1,115 @@
+version: "3.8"
+
+services:
+  comment-service:
+    build:
+      context: ./CommentService
+      dockerfile: Dockerfile
+    image: sganesh1907/commentservicev4  # Custom image name
+    container_name: comment-service
+    ports:
+      - "8084:8084"
+    env_file:
+      - custom.env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${COMMENT_SERVICE_PORT}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  idea-service:
+    build:
+      context: ./IdeaService
+      dockerfile: Dockerfile
+    image: sganesh1907/ideaservicev4  # Custom image name
+    container_name: idea-service
+    ports:
+      - "8083:8083"
+    env_file:
+      - custom.env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${IDEA_SERVICE_PORT}
+    depends_on:
+      - comment-service
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  userprofile-service:
+    build:
+      context: ./UserProfileService
+      dockerfile: Dockerfile
+    image: sganesh1907/userprofileservicev4  # Custom image name
+    container_name: userprofile-service
+    ports:
+      - "8082:8082"
+    env_file:
+      - custom.env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${USERPROFILE_SERVICE_PORT}
+    depends_on:
+      - idea-service
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  message-service:
+    build:
+      context: ./MessageService
+      dockerfile: Dockerfile
+    image: sganesh1907/messageservicev4  # Custom image name
+    container_name: message-service
+    ports:
+      - "8085:8085"
+    env_file:
+      - custom.env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${MESSAGE_SERVICE_PORT}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Frontend  # Note: Ensure this matches your directory name (case-sensitive)
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL_IDEA: ${REACT_APP_API_URL_IDEA}
+        REACT_APP_API_URL_COMMENT: ${REACT_APP_API_URL_COMMENT}
+        REACT_APP_API_URL_USER: ${REACT_APP_API_URL_USER}
+        REACT_APP_API_URL_MESSAGE: ${REACT_APP_API_URL_MESSAGE}
+    image: sganesh1907/frontendv10  # Custom image name
+    container_name: share-react-frontend
+    ports:
+      - "3000:80"
+    env_file:
+      - custom.env
+    environment:
+      REACT_APP_API_URL_IDEA: ${REACT_APP_API_URL_IDEA}
+      REACT_APP_API_URL_COMMENT: ${REACT_APP_API_URL_COMMENT}
+      REACT_APP_API_URL_USER: ${REACT_APP_API_URL_USER}
+      REACT_APP_API_URL_MESSAGE: ${REACT_APP_API_URL_MESSAGE}
+    depends_on:
+      - userprofile-service
+      - idea-service
+      - comment-service
+      - message-service
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
